@@ -1,14 +1,18 @@
 const upDir = __dirname.replace("commands","");
-const profiles = require(upDir + "Profile.js");
+const Profiles = require(upDir + "Profile.js");
+const DataLayer = require(upDir + "DataLayer.js");
+
 module.exports = {
 	name: 'register_me',
 	description: 'Creates new profile in json with profiles, from discord profile data, if not there.',
 	execute(message, args) {
-		if(profiles.hasRegisteredProfile(message.member.id)){
+		if(DataLayer.getDataPieceCondition("Profiles", '{"ID":"' + message.member.id + '"}') != null){
       message.channel.send("Your profile is already created.");
     } else{
-      let newProfile = new profiles.Profile(message.member.user.tag, message.member.id);
-      profiles.addNewProfile(newProfile);
+			let profiles = DataLayer.getData('Profiles');
+      let newProfile = new Profiles.Profile(message.member.user.tag, message.member.id);
+      profiles.push(newProfile);
+			DataLayer.saveData("Profiles",profiles);
       message.channel.send("Your profile was created.");
     }
 	},

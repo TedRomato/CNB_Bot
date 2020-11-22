@@ -1,18 +1,19 @@
 const fs = require('fs');
 const editJsonFile = require("edit-json-file");
+const DataLayer = require(__dirname + "/DataLayer.js");
 
 class Profile {
   constructor(nameTag, profileID) {
     this.nameTag = nameTag;
     this.ID = profileID;
-    this.rank = undefined/*get lowest rank*/;
+    this.rank = null/*get lowest rank*/;
     this.rankPoints = 0;
     this.xp = 0;
     this.lvl = 0;
     this.achivments = [];
     this.logs = [];
     this.completedIssues = [];
-    this.currentIssue = undefined;
+    this.currentIssue = null;
     this.logStreak = 0;
     }
     newAchivement(achivement){
@@ -26,8 +27,26 @@ class Profile {
       }
       return false;
     }
+    getProfileInfo(){
+      let issueStr;
+      try {
+        issueStr = DataLayer.getDataPieceCondition("Issues", '{"ID":"' + this.currentIssue + '" }').name + "#" +  this.currentIssue;
+      } catch (e) {
+        issueStr = 'none'
+      }
+      let str = "*Name:* **" + this.nameTag
+              + "**\n*Rank:* **" + this.rank
+              + "**\n*Rank Points:* **" + this.rankPoints
+              + "**\n*Lvl:* **" + this.lvl
+              + "**\n*XP:* **" + this.xp
+              + "**\n*Achivements Completed:* **" + this.achivments.length
+              + "**\n*Current Issue:* **" + issueStr
+              + "**\n*Completed Issues:* **" + this.completedIssues.length
+              + "**\n*Current log streak:* **" + this.logStreak + "**";
+     return str;
+   }
 }
-
+/*
 function saveProfiles(profiles){
   let file = editJsonFile(__dirname + "/Profiles.json");
   file.set("profiles", JSON.stringify(profiles));
@@ -131,6 +150,33 @@ function changeProfile(changedProfile){
 }
 
 
+*/
+function dataToProfile(data){
+  if(Array.isArray(data)){
+    let arr = [];
+    for(let i = 0; i < data.length; i++){
+      arr.push(singleDataToProfile(data[i]));
+    }
+    return arr;
+  }else{
+    singleDataToProfile(data);
+    return data;
+  }
+}
+
+function singleDataToProfile(Data){
+  let profile = new Profile();
+  for(let propt in Data){
+    if(profile.hasOwnProperty(propt)){
+      profile[propt] = Data[propt];
+    }else{
+      throw "Profile doesn't have porprety " + propt + " you are trying to assign from JSON_Data";
+    }
+  }
+  return profile;
+}
 
 
-module.exports = {Profile, addNewProfile, hasRegisteredProfile, getProfileInfo, getProfileFromID, saveProfiles, getProfiles, changeProfile};
+
+
+module.exports = {Profile, singleDataToProfile, dataToProfile};

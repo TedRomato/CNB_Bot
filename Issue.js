@@ -1,5 +1,6 @@
 const fs = require('fs');
 const editJsonFile = require("edit-json-file");
+const DataLayer = require(__dirname + "/DataLayer.js");
 
 const state1 = "U"; //UNSOLVED
 const state2 = "S"; //SOLVING
@@ -11,14 +12,14 @@ const state3Text = "This issue was solved by: "
 
 
 class Issue{
-  constructor(name){
-    this.name = name;
-    this.ID = JSON.parse(editJsonFile(__dirname + "/Issues.json").get("issues")).length + 1;
-    this.awardXP = undefined;
-    this.solver = undefined;
+  constructor(){
+    this.name = null;
+    this.ID = JSON.parse(editJsonFile(__dirname + "/Issues.json").get("data")).length + 1;
+    this.awardPoints = null;
+    this.solver = null;
     this.state = state1;
-    this.xpDrop = 10;
-    this.description = undefined;
+    this.pointsDrop = 10;
+    this.description = null;
   }
   setState(state){
     if(state == state1 || state == state2 || state == state3){
@@ -33,14 +34,14 @@ class Issue{
   setDescription(des) {
     this.description = des;
   }
-  setAwardXP(awardXP) {
-    this.awardXP = awardXP;
+  setAwardPoints(awardPoints) {
+    this.awardPoints = awardPoints;
   }
   setSolver(solver) {
     this.solver = solver;
   }
-  setXPDrop(xpDrop) {
-    this.xpDrop = xpDrop;
+  setPointsDrop(pointsDrop) {
+    this.pointsDrop = pointsDrop;
   }
   setName(name){
     this.name = name;
@@ -52,10 +53,10 @@ class Issue{
         statusStr = state1Text;
         break;
       case state2:
-        statusStr = state2Text;
+        statusStr = state2Text + DataLayer.getDataPieceCondition("Profiles", '{"ID":' + this.solver + '}').nameTag;
         break;
       case state3:
-        statusStr = state3text;
+        statusStr = state3text  + DataLayer.getDataPieceCondition("Profiles", '{"ID":' + this.solver + '}').nameTag;
         break;
       default:
         console.log('State is invalid in getIssueAsString.');
@@ -65,80 +66,36 @@ class Issue{
     let str = '*Name:* **' + this.name
             + '**\n*Issue ID:* **#' + this.ID
             + '**\n*Points awarded:* **' + this.awardXP + " XP"
-            + '**\n*Solver:* **' + statusStr
+            + '**\n*Status:* **' + statusStr
             + '**\n*Description:* **' + this.description + "**";
     return str;
   }
 }
 
-function issueFromNonClass(object){
-  let issue = new Issue(object.name);
 
-  issue.setDescription(object.description);
-  issue.setAwardXP(object.awardXP);
-  issue.setSolver(object.solver);
-  issue.setXPDrop(object.xpDrop);
-  issue.setID(object.ID);
+function DataToIssue(data){
+  if(Array.isArray(data)){
+    let arr = [];
+    for(let i = 0; i < data.length; i++){
+      arr.push(singleDataToIssue(data[i]));
+    }
+    return arr;
+  }else{
+    return singleDataToIssue(data);
+  }
+}
+
+function singleDataToIssue(data){
+  let issue = new Issue();
+  for(let propt in data){
+    if(issue.hasOwnProperty(propt)){
+      issue[propt] = data[propt];
+    }else{
+      throw "Issue doesn't have porprety " + propt + " you are trying to assign from JSON_Data";
+    }
+  }
   return issue;
 }
 
 
-function createIssue(name,awardXP,description){
-  let issue = new Issue(name);
-  issue.setAwardXP(awardXP);
-  issue.setDescription(description);
-  let unsolvedIssues = getIssues();
-  unsolvedIssues.push(issue);
-  saveIssues(unsolvedIssues);
-}
-
-function getIssues(){
-//  console.log(editJsonFile(__dirname + "/Issues.json").get("issues"));
-  let objarr = JSON.parse(editJsonFile(__dirname + "/Issues.json").get("issues"));
-  for(let i = 0; i < objarr.length; i++){
-    objarr[i] = issueFromNonClass(objarr[i]);
-  }
-  return objarr;
-}
-
-function saveIssues(issues){
-  let file = editJsonFile(__dirname + "/Issues.json");
-  file.set("issues", JSON.stringify(issues));
-  file.save();
-}
-
-function getUnsolvedIssues(){
-  let issues = getIssues();
-  let arr = [];
-  for (var i = 0; i < issues.length; i++) {
-    if(issues[i].state == state1){
-      arr.push(issues[i]);
-    }
-  }
-  return arr;
-}
-
-function getIssueFromID(id){
-  let issues = getIssues();
-  for (var i = 0; i < issues.length; i++) {
-    if(issues[i].ID == id){
-      return issues[i];
-    }
-  }
-  return null;
-}
-
-function changeIssue(changedIssue){
-  let issues = getIssues();
-  for (var i = 0; i < issues.length; i++) {
-    if(issues[i].ID == changedIssue.ID){
-      issues[i] = changedIssue;
-      saveIssues(issues);
-      return true;
-    }
-  }
-  return null;
-}
-
-
-module.exports = {Issue, createIssue, getIssues, getUnsolvedIssues, getIssueFromID, saveIssues, changeIssue};
+module.exports = {Issue, DataToIssue, state1, state2, state3};
