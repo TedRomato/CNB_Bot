@@ -5,11 +5,11 @@ const Issues = require(upDir + 'Issue.js');
 
 module.exports = {
 	name: 'start_solving',
-	description: 'assign me with solving issue, if I dont have any unfinished',
+	description: '[Syntax: !start_solving /*issue ID*/] Assigns you with solving an issue. Solving an issue enables you to earn points, because without solving an issue, you cant make logs.',
 	execute(message, args) {
 		console.log('is: ', args[0], 'pr: ', message.member.id);
-		let profile = DataLayer.getDataPieceCondition("Profiles", '{"ID":"' + message.member.id + '"}');
-		let issue = DataLayer.getDataPieceCondition("Issues", '{"ID":"' + args[0] + '"}');
+		let profile = DataLayer.getDataPieceCondition("Profiles", {"ID":message.member.id });
+		let issue = DataLayer.getDataPieceCondition("Issues", {"ID":args[0] });
 		if(profile == null){
 			message.channel.send("Your have to register first.");
 		}

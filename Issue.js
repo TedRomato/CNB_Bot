@@ -7,7 +7,7 @@ const state2 = "S"; //SOLVING
 const state3 = "C"; //CLOSED
 
 const state1Text = "Looking for solver..."
-const state2Text = "This issue is beng solved by: "
+const state2Text = "This issue is being solved by: "
 const state3Text = "This issue was solved by: "
 
 
@@ -18,8 +18,9 @@ class Issue{
     this.awardPoints = null;
     this.solver = null;
     this.state = state1;
-    this.pointsDrop = 10;
     this.description = null;
+    this.pointsDrop = 10;
+    this.logs = [];
   }
   setState(state){
     if(state == state1 || state == state2 || state == state3){
@@ -53,10 +54,10 @@ class Issue{
         statusStr = state1Text;
         break;
       case state2:
-        statusStr = state2Text + DataLayer.getDataPieceCondition("Profiles", '{"ID":' + this.solver + '}').nameTag;
+        statusStr = state2Text + DataLayer.getDataPieceCondition("Profiles", {"ID":this.solver }).nameTag;
         break;
       case state3:
-        statusStr = state3text  + DataLayer.getDataPieceCondition("Profiles", '{"ID":' + this.solver + '}').nameTag;
+        statusStr = state3text  + DataLayer.getDataPieceCondition("Profiles", {"ID":this.solver }).nameTag;
         break;
       default:
         console.log('State is invalid in getIssueAsString.');
@@ -65,7 +66,8 @@ class Issue{
 
     let str = '*Name:* **' + this.name
             + '**\n*Issue ID:* **#' + this.ID
-            + '**\n*Points awarded:* **' + this.awardXP + " XP"
+            + '**\n*Points awarded:* **' + this.awardPoints
+            + '**\n*Points drop:* **' + this.pointsDrop
             + '**\n*Status:* **' + statusStr
             + '**\n*Description:* **' + this.description + "**";
     return str;

@@ -4,9 +4,9 @@ const DataLayer = require(upDir + "DataLayer.js");
 
 module.exports = {
 	name: 'get_issues',
-	description: 'displays list of unsolved issues',
+	description: '[Syntax: !get_issues /*Issue state*/] Returns list of issues with issue state',
 	execute(message, args) {
-		let data = DataLayer.getDataPieceCondition("Issues", '{"state":"' + args[0] + '"}');
+		let data = DataLayer.getDataPieceCondition("Issues", {"state":args[0]});
 		if(data == null){
 			message.channel.send('No issue with such type at the moment...');
 			return;

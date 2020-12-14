@@ -1,6 +1,8 @@
 const editJsonFile = require('edit-json-file');
 const profilesPath =  __dirname + "/Profiles.json";
 const issuesesPath =  __dirname + "/Issues.json";
+const logsPath =  __dirname + "/Logs.json";
+const achivementsPath =  __dirname + "/Achivements.json";
 
 function determinePath(dataType){
   let filePath;
@@ -9,9 +11,31 @@ function determinePath(dataType){
       return issuesesPath;
     case 'Profiles':
       return profilesPath;
+    case 'Logs':
+      return logsPath;
+    case 'Achivements':
+      return achivementsPath;
     default:
       throw dataType + ' is unknown dataType';
   }
+}
+
+function indexOfFirst(dataType, dataConditions){
+  let arr = [];
+  let single = null;
+  let allData = getData(dataType);
+  let conditions = dataConditions;
+  for(let propt in conditions){
+    if(allData[0] != null && !allData[0].hasOwnProperty(propt)){
+      throw "DataType: " + dataType + " doesn't have property: " + propt;
+    }
+    for(let i = 0; i < allData.length; i++){
+        if(allData[i][propt] == conditions[propt]){
+          return i;
+      }
+    }
+  }
+  return null;
 }
 
 function getData(dataType){
@@ -29,7 +53,7 @@ function getDataPieceCondition(dataType, dataConditions){
   let arr = [];
   let single = null;
   let allData = getData(dataType);
-  let conditions = JSON.parse(dataConditions);
+  let conditions = dataConditions;
   for(let propt in conditions){
     if(allData[0] != null && !allData[0].hasOwnProperty(propt)){
       throw "DataType: " + dataType + " doesn't have property: " + propt;
@@ -64,4 +88,4 @@ function saveData(dataType, newData){
 
 
 
-module.exports = {getData, getDataPieceCondition, saveData}
+module.exports = {getData, getDataPieceCondition, saveData, indexOfFirst}
