@@ -5,5 +5,13 @@ Windows 10:<br>
   <li>cd "YOUR PATH"<br></li>
   <li>git clone https://github.com/TedRomato/CNB_Bot.git<br></li>
   <li>cd CNB_Bot<br></li>
-  <li>./setup_windows.sh<br></li>
+  <li>setup_windows.sh<br></li>
+</ul>
+
+Linux:<br>
+<ul>
+  <li>cd "YOUR PATH"<br></li>
+  <li>git clone https://github.com/TedRomato/CNB_Bot.git<br></li>
+  <li>cd CNB_Bot<br></li>
+  <li>./setup_linux.sh<br></li>
 </ul>
