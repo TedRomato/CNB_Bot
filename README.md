@@ -1,4 +1,7 @@
 # CNB_Bot
-cd to a place where you would like to have the bot 
+setup:
+Windows 10
+cd "YOUR PATH"
 git clone https://github.com/TedRomato/CNB_Bot.git
-cd CNB_Bot.git
+cd CNB_Bot
+./setup_windows.sh
