@@ -13,5 +13,6 @@ Linux:<br>
   <li>cd "YOUR PATH"<br></li>
   <li>git clone https://github.com/TedRomato/CNB_Bot.git<br></li>
   <li>cd CNB_Bot<br></li>
+  <li>chmod ugo+rwx setup_linux.sh</li>
   <li>./setup_linux.sh<br></li>
 </ul>
